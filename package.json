@@ -1,0 +1,29 @@
+{
+  "name": "dir-scan-del",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.1.0",
+    "@tauri-apps/api": "^1.5.0",
+    "element-plus": "^2.3.14",
+    "vue": "^3.3.4"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.5.0",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "vite": "^4.4.4",
+    "unocss": "^0.57.7",
+    "@unocss/preset-attributify": "^0.57.7",
+    "@unocss/preset-uno": "^0.57.7",
+    "@unocss/transformer-directives": "^0.57.7",
+    "unplugin-auto-import": "^0.16.6",
+    "unplugin-vue-components": "^0.25.2"
+  }
+}
