@@ -59,7 +59,6 @@ fn del_dir(target_directory: Vec<String>, res: &mut Vec<(String, String)>) {
     }
 }
 
-
 #[tauri::command]
 fn scan(directory: String, target_directory: Vec<String>) -> Result<(Vec<(String, u64, String)>, u64), String> {
     let mut res: Vec<(String, u64, String)> = Vec::new();
