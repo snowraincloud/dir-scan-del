@@ -2,8 +2,37 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::fs::{self};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
+
+fn calculate_directory_size(path: &Path) -> u64 {
+    let mut total_size = 0;
+
+    if path.is_dir() {
+        if let Ok(entries) = fs::read_dir(path) {
+            for entry in entries {
+                if let Ok(entry) = entry {
+                    let entry_path = entry.path();
+                    if entry_path.is_dir() {
+                        total_size += calculate_directory_size(&entry_path);
+                    } else {
+                        total_size += match entry_path.metadata() {
+                            Ok(metadata) => metadata.len(),
+                            Err(_) => 0,
+                        };
+                    }
+                }
+            }
+        }
+    } else {
+        total_size += match path.metadata() {
+            Ok(metadata) => metadata.len(),
+            Err(_) => 0,
+        };
+    }
+
+    total_size
+}
 
 fn scan_dir(directory: &PathBuf, target_directory: Vec<String>, all_size: &mut u64, res: &mut Vec<(String, u64, String)>)  {
     match fs::read_dir(directory) {
@@ -17,18 +46,7 @@ fn scan_dir(directory: &PathBuf, target_directory: Vec<String>, all_size: &mut u
                     if let Some(dir_name) = entry_path.file_name(){
                         if target_directory.contains(&dir_name.to_string_lossy().to_string()) {
                             let dir_path = entry_path.clone();
-                            let mut size: u64 = 0;
-                            if let Ok(entries) = fs::read_dir(&dir_path) {
-                                for entry in entries {
-                                    if let Ok(entry) = entry {
-                                        size += match entry.metadata() {
-                                            Ok(metadata) => metadata.len(),
-                                            Err(_) => 0,
-                                        };
-                                            
-                                    }
-                                }
-                            }
+                            let size: u64 = calculate_directory_size(&dir_path);
                             *all_size += size;
                             res.push((entry_path.to_str().unwrap_or("Error dir").to_string(), size, "success".to_string()));
                         }else{
