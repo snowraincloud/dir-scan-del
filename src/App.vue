@@ -43,7 +43,7 @@
           </el-input>
         </el-form-item>
         <el-form-item label="目标文件夹名称">
-          <div class="flex gap-2">
+          <div class="flex gap-2 flex-wrap">
             <el-tag v-for="tag in dynamicTags" :key="tag" closable :disable-transitions="false"
               @close="handleClose(tag)">
               {{ tag }}
@@ -78,7 +78,7 @@ const scanForm = ref({
 
 
 const inputValue = ref('')
-const dynamicTags = ref(['target', 'node_modules'])
+const dynamicTags = ref([])
 const inputVisible = ref(false)
 const InputRef = ref()
 
@@ -205,8 +205,18 @@ const tableDate = ref([
 ])
 
 
-
-
+const init = () => {
+  invoke('get_config').then((res) => {
+    scanForm.value = {
+      ...scanForm.value,
+      path: res[0]
+    }
+    dynamicTags.value = res[1]
+  }).catch(err => {
+    console.error(err)
+  })
+}
+init()
 </script>
 <style scoped>
 .content-query {

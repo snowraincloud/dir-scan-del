@@ -563,6 +563,7 @@ dependencies = [
  "serde_json",
  "tauri",
  "tauri-build",
+ "toml 0.5.11",
 ]
 
 [[package]]

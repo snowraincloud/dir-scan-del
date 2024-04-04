@@ -4,6 +4,10 @@
 use std::fs::{self};
 use std::path::{Path, PathBuf};
 
+use std::sync::OnceLock;
+use serde::Deserialize;
+
+
 
 fn calculate_directory_size(path: &Path) -> u64 {
     let mut total_size = 0;
@@ -93,9 +97,29 @@ fn del(target_directory: Vec<String>) -> Result<Vec<(String, String)>, String> {
     Ok(res)
 }
 
+static CONF:OnceLock<Config> = OnceLock::new();
+
+#[tauri::command]
+fn get_config() -> Result<(String, Vec<String>), String> {
+    let config = CONF.get().unwrap();
+    Ok((config.path.clone(), config.target_directory.clone()))
+}
+
+#[derive(Deserialize, Debug)]
+struct Config {
+    path: String,
+    target_directory: Vec<String>,
+}
+
+
 fn main() {
+    // 读取配置文件内容
+    let content = fs::read_to_string("./conf.toml").expect("读取配置文件失败");
+    // 解析为结构体
+    let config: Config = toml::from_str(&content).expect("解析配置文件失败");
+    CONF.set(config).unwrap();
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![scan, del])
+        .invoke_handler(tauri::generate_handler![scan, del, get_config])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
